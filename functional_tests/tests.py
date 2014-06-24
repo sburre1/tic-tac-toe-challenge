@@ -21,6 +21,8 @@ class NewVisitorTest(LiveServerTestCase):
         self.assertIn('Tic-Tac-Toe', header_text)
         
         # He notices an empty tic-tac-toe board game.
+        canvas_text = self.browser.find_element_by_tag_name('canvas').text
+        self.assertIn('Your browser does not support HTML5 canvas', canvas_text)
         self.fail('Finish the test!')
         
         # At the bottom of the screen, he notices a "Start Game" button, "How To Play?" button,
