@@ -1,7 +1,8 @@
+from django.test import LiveServerTestCase
 from selenium import webdriver
 import unittest
 
-class NewVisitorTest(unittest.TestCase):
+class NewVisitorTest(LiveServerTestCase):
     def setUp(self):
         self.browser = webdriver.Firefox()
         self.browser.implicitly_wait(3)
@@ -12,13 +13,14 @@ class NewVisitorTest(unittest.TestCase):
     def test_can_start_game(self):
         # Stefan has heard about a cool new online tic-tac-toe app. He goes
         # to check out its homepage.
-        self.browser.get('http://localhost:8000')
+        self.browser.get(self.live_server_url)
         
         # He notices the page title and header mention Tic-Tac-Toe
         self.assertIn('Tic-Tac-Toe', self.browser.title)
         header_text = self.browser.find_element_by_tag_name('h1').text
         self.assertIn('Tic-Tac-Toe', header_text)
         
+        # He notices an empty tic-tac-toe board game.
         self.fail('Finish the test!')
         
         # At the bottom of the screen, he notices a "Start Game" button, "How To Play?" button,
@@ -44,6 +46,3 @@ class NewVisitorTest(unittest.TestCase):
         
         # Once the game is over, a pop up displays whether the player won or lost.
         
-
-if __name__ == '__main__':
-    unittest.main(warnings='ignore')
