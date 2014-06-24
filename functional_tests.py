@@ -16,6 +16,9 @@ class NewVisitorTest(unittest.TestCase):
         
         # He notices the page title and header mention Tic-Tac-Toe
         self.assertIn('Tic-Tac-Toe', self.browser.title)
+        header_text = self.browser.find_element_by_tag_name('h1').text
+        self.assertIn('Tic-Tac-Toe', header_text)
+        
         self.fail('Finish the test!')
         
         # At the bottom of the screen, he notices a "Start Game" button, "How To Play?" button,
