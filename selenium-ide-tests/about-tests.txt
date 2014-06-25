@@ -1,0 +1,3 @@
+Selenium-IDE Tests
+
+The following test cases were ran using the Firefox Plugin "Selenium IDE". 

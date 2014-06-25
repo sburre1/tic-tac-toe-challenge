@@ -35,10 +35,37 @@ function getPlayerLetter() {
 }
 
 /*
+ * Function: showOrHideButton()
+ * Purpose: used to show and hide a 
+ * button when it doesn't need to be displayed
+ * on the GUI.
+ * Parameters:
+ * btnID - the id for the button
+ * action - either "hide" or "show"
+ * 
+ */
+function showOrHideButton(btnID, action) {
+	debug("showOrHideButton");
+	if (action == "hide")
+	{
+		document.getElementById(btnID).classList.add('hide');
+		debug(document.getElementById('startGameBtn').classList);
+	} else 
+	{
+		document.getElementById(btnID).classList.remove('hide');
+		debug(document.getElementById('startGameBtn').classList);
+	}
+}
+
+
+/*
  * Function: startGame()
  * Purpose: driver function
  */
 function startGame() {
+	// hide the start game button
+	showOrHideButton('startGameBtn', 'hide');
+	
 	// prompt the user to see if he wants to be
 	// player_x or player_o
 	var player_letter = getPlayerLetter();

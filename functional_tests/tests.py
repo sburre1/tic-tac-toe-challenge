@@ -29,11 +29,13 @@ class NewVisitorTest(LiveServerTestCase):
         # and a "Clear Score" button.
         start_btn = self.browser.find_element_by_id('startGameBtn')
         self.assertEqual('Start Game', start_btn.text, 'The start game button is misconfigured.')
-
+        self.fail("Finish the test!");
+        # THE FOLLOWING TESTS WILL BE HANDLED BY THE SELENIUM IDE TESTS.
+        
         # Stefan decides to start a new game. 
         # Stefan is asked if he would like to be Player X or Player O.
         # Stefan selects Player X.
-        self.fail('Finish the test!')
+        
         
         # Stefan wonders which player will go first. He sees that the site randomly selects 
         # which player goes first.
@@ -47,8 +49,7 @@ class NewVisitorTest(LiveServerTestCase):
         
         # Stefan decides to check out the how to play tic-tac-toe instructions
         # and clicks the button to get more information
-        
-        
+                
         # The page updates again, and now shows instructions on how to play tic-tac-toe
         
         # He closes the how to play instructions.     
