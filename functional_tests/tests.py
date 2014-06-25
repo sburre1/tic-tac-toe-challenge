@@ -23,20 +23,17 @@ class NewVisitorTest(LiveServerTestCase):
         # He notices an empty tic-tac-toe board game.
         canvas_text = self.browser.find_element_by_tag_name('canvas').text
         self.assertIn('Your browser does not support HTML5 canvas', canvas_text)
-        self.fail('Finish the test!')
+        
         
         # At the bottom of the screen, he notices a "Start Game" button, "How To Play?" button,
         # and a "Clear Score" button.
+        start_btn = self.browser.find_element_by_id('startGameBtn')
+        self.assertEqual('Start Game', start_btn.text, 'The start game button is misconfigured.')
 
-        # Stefan isn't sure how to play tic-tac-toe and clicks the button to get more information
-        # on how to play tic-tac-toe.
-        
-        # The page updates again, and now shows instructions on how to play tic-tac-toe
-        
-        
-        # He closes the how to play instructions and decides to start a new game.
+        # Stefan decides to start a new game. 
         # Stefan is asked if he would like to be Player X or Player O.
         # Stefan selects Player X.
+        self.fail('Finish the test!')
         
         # Stefan wonders which player will go first. He sees that the site randomly selects 
         # which player goes first.
@@ -48,3 +45,10 @@ class NewVisitorTest(LiveServerTestCase):
         
         # Once the game is over, a pop up displays whether the player won or lost.
         
+        # Stefan decides to check out the how to play tic-tac-toe instructions
+        # and clicks the button to get more information
+        
+        
+        # The page updates again, and now shows instructions on how to play tic-tac-toe
+        
+        # He closes the how to play instructions.     

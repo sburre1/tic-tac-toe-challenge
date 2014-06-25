@@ -5,6 +5,7 @@
 		<title>Tic-Tac-Toe</title>
 		<script src="/static/modernizr.js"></script>
 		<script src="/static/canvasapp.js"></script>
+		<script src="/static/boardgamefunctions.js"></script>
 	</head>
 	<body>
 		<h1>Tic-Tac-Toe</h1>
@@ -12,7 +13,12 @@
 		<div>
 			<canvas id="canvas" width="400" height="400">
 				Your browser does not support HTML5 canvas.
-			</canvas>
+			</canvas>			
+		</div>
+		<button id='startGameBtn' onClick="startGame()">Start Game</button>
+		<div id="gameInfo">
+			<h3>Current Game Info</h3>
+			<p id="playerLetter"></p>
 		</div>
 	</body>
 </html>
