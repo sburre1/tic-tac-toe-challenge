@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+	<head>
+    	<meta charset="utf-8">
+    	<title>Javascript tests</title>
+    	<link rel="stylesheet" href="qunit.css">
+	</head>
+
+	<body>
+    	<div id="qunit"></div>
+    	<div id="qunit-fixture"></div>
+    	<script src="qunit.js"></script>
+    	<script src="../boardgamefunctions.js"></script>
+    	<script>
+			/*global $, test, equal */
+
+			test("Grid Square Check", function () {
+				var mousePos = {x:45, y:90};
+				var result = whichGridSpotChosen(mousePos);
+			    equal(result.number, 1, "Grid Spot 1 Checked!");
+			    
+			    mousePos.x = 175;
+			    mousePos.y = 90;
+			    result = whichGridSpotChosen(mousePos);
+			    equal(result.number, 2, "Grid Spot 2 Checked!");
+			    
+			    mousePos.x = 310;
+			    mousePos.y = 90;
+			    result = whichGridSpotChosen(mousePos);
+			    equal(result.number, 3, "Grid Spot 3 Checked!");
+			    
+			    mousePos.x = 45;
+			    mousePos.y = 225;
+			    result = whichGridSpotChosen(mousePos);
+			    equal(result.number, 4, "Grid Spot 4 Checked!");
+			    
+			    mousePos.x = 175;
+			    mousePos.y = 225;
+			    result = whichGridSpotChosen(mousePos);
+			    equal(result.number, 5, "Grid Spot 5 Checked!");
+			    
+			    mousePos.x = 310;
+			    mousePos.y = 225;
+			    result = whichGridSpotChosen(mousePos);
+			    equal(result.number, 6, "Grid Spot 6 Checked!");
+			    
+			    mousePos.x = 45;
+			    mousePos.y = 360;
+			    result = whichGridSpotChosen(mousePos);
+			    equal(result.number, 7, "Grid Spot 7 Checked!");
+			    
+			    mousePos.x = 175;
+			    mousePos.y = 360;
+			    result = whichGridSpotChosen(mousePos);
+			    equal(result.number, 8, "Grid Spot 8 Checked!");
+			    
+			    mousePos.x = 310;
+			    mousePos.y = 360;
+			    result = whichGridSpotChosen(mousePos);
+			    equal(result.number, 9, "Grid Spot 9 Checked!");
+			});
+
+    	</script>
+    </body>
+</html>
