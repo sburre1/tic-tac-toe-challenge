@@ -165,6 +165,20 @@ function whichGridSpotChosen(mousePos) {
 	return gridSquare;
 }
 
+/* 
+ * Function: drawLetter
+ * Purpose: Will draw either 'X' or 'O'
+ * on the board at the x,y location specified.
+ */
+function drawLetter(x, y, letter) {
+	var canvas = document.getElementById("canvas");
+	var context = canvas.getContext("2d");
+	
+	context.font = "70px arial";
+	context.fillStyle = "#FFFFFF";
+	context.fillText(letter, x, y); 
+}
+
 /*
  * Function: playersMove()
  * Purpose: Listens for the player's click on 
@@ -173,7 +187,7 @@ function whichGridSpotChosen(mousePos) {
  * the board.
  * 
  */
-function playersMove(){
+function playersMove(letter){
 	debug("players move");
 	// listen for click on grid
 	var theCanvas = document.getElementById('canvas');
@@ -189,7 +203,7 @@ function playersMove(){
 		
 		// place players game piece on center of square.
 		debug("place players move on board.");		
-		
+		drawLetter(gridSquare.x, gridSquare.y, letter);
 	}); 	
 }
 
@@ -202,9 +216,10 @@ function playersMove(){
  */
 function whoGoesFirst() {
 	// setting this to player for now.
-	var first = "player";
+	var choices = ['player', 'computer'];
+	var chosen = choices[Math.floor(Math.random() * choices.length)];
 	
-	return first;
+	return chosen;
 }
 
 /*
@@ -228,9 +243,11 @@ function startGame() {
 	
 	// if player goes first, his move.
 	if (firstPlayer == 'player'){
-		playersMove();
+		document.getElementById('whosTurn').innerHTML = "Who's Turn: YOUR TURN";
+		playersMove(player_letter);
 	} else
 	{
+		document.getElementById('whosTurn').innerHTML = "Who's Turn: COMPUTER TURN";
 		debug("Computer's Turn");
 	}
 
