@@ -59,7 +59,27 @@
 			    result = whichGridSpotChosen(mousePos);
 			    equal(result.number, 9, "Grid Spot 9 Checked!");
 			});
-
+			
+			test("Grid Square Space Free Check", function() {
+				var square1 = new gridSquare(1, "corner", 45, 90, false, "-1");
+				equal(square1.getChosen(), false, 'Space is free check!')
+				square1.setChosenAndChosenBy(true, 'X');
+				equal(square1.getChosen(), true, 'Space is not free check!');
+				equal(square1.getChosenBy(), 'X', 'Space is taken by player X check!');
+			});
+			
+			test("Grid Square Object Initializer Check", function() {
+				var square1 = new gridSquare(1, "corner", 45, 90, false, "-1");
+				
+				equal(square1.getNumber(), 1, "Grid Square Set 'number' check!");
+				equal(square1.getType(), "corner", "Grid Square Set 'type' check!");
+				equal(square1.getX(), 45, "Grid Square Set 'x' check!");
+				equal(square1.getY(), 90, "Grid Square Set 'y' check!");
+				equal(square1.getChosen(), false, "Grid Square Set 'chosen' check!");
+				equal(square1.getChosenBy(), "-1", "Grid Square Set 'chosenBy' check!");
+				
+			});
+	
     	</script>
     </body>
 </html>
