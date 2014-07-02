@@ -304,11 +304,22 @@ function on_canvas_click(evt){
 		
 	}
 	
+	if(win == 'false' && movesLeft == 0)
+	{
+		alert("TIE!");
+		var context = canvas.getContext('2d');
+	
+	  	// Reset canvas & reload page.
+  		context.clear();
+		
+	}
+	
 	// Should the computer have another turn?
 	if(win == 'false' && movesLeft > 0) {
 		// no one has won yet, computer's turn.
 		computersMove();
 	}		
+	
 }
 
 /*
@@ -538,6 +549,17 @@ function computersMove() {
   		context.clear();
 	}
 	
+	if(win == 'false' && movesLeft == 0)
+	{
+		alert("TIE!");
+		
+		var canvas = document.getElementById('canvas');
+		var context = canvas.getContext('2d');
+	
+	  	// Reset canvas & reload page.
+  		context.clear();
+		
+	}
 }
 
 /*
