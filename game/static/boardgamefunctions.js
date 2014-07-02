@@ -462,19 +462,26 @@ function determineBestMove() {
 	// Choose a random corner that player did not take.
 	if(c_moves.length == 0 && p_moves.length == 1 && takenTurn == false)
 	{ 
-		var chosenCorner = corners[Math.floor(Math.random() * corners.length)];			
-		var result = isFree(chosenCorner, computer_letter);
+		if(center.length == 0) {
+			var chosenCorner = corners[Math.floor(Math.random() * corners.length)];			
+			var result = isFree(chosenCorner, computer_letter);
+				
+			drawLetter(result.x, result.y, computer_letter);
+			takenTurn = true;
 			
-		drawLetter(result.x, result.y, computer_letter);
-		takenTurn = true;
-		
-		// Remove the taken space from the 'corners' array.	
-		corners.splice(corners.indexOf(chosenCorner), 1);
+			// Remove the taken space from the 'corners' array.	
+			corners.splice(corners.indexOf(chosenCorner), 1);
+				
+			// keep track of the computer's moves.
+			c_moves.push(chosenCorner);
 			
-		// keep track of the computer's moves.
-		c_moves.push(chosenCorner);
-		
-		makeChangesInGridTracker(chosenCorner, computer_letter);
+			makeChangesInGridTracker(chosenCorner, computer_letter);
+		} else {
+			// choose the center spot so that the player cannot win.
+			var chosen = center[0];
+			makeComputerMove(chosen);
+			takenTurn = true;
+		}
 	}
 	
 	// is there a corner space free?	
