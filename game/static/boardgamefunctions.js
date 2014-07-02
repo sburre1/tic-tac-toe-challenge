@@ -2,7 +2,7 @@
  * Board Configuration Variables
  */
 var corners = [1, 3, 7, 9];
-var sides = [4, 5, 6];
+var sides = [2, 4, 6, 8];
 var center = [5];
 var winningMoves = [[1,2,3], [4,5,6], [7,8,9], [1,4,7], [2,5,8], [3,6,9],[1,5,9], [3,5,7]];
 
@@ -16,6 +16,14 @@ var square6 = new gridSquare(6, "side", 310, 225, false, "-1");
 var square7 = new gridSquare(7, "corner", 45, 360, false, "-1");
 var square8 = new gridSquare(8, "side", 175, 360, false, "-1");
 var square9 = new gridSquare(9, "corner", 310, 360, false, "-1");
+
+// Keep track of current game information
+var win = 'false';
+var movesLeft = 10;
+var player_letter;
+var computer_letter;
+var p_moves = [];
+var c_moves = [];
 
 /*
  * Function: debug()
@@ -65,11 +73,9 @@ function getPlayerLetter() {
  * 
  */
 function showOrHideButton(btnID, action) {
-	debug("showOrHideButton");
 	if (action == "hide")
 	{
 		document.getElementById(btnID).classList.add('hide');
-		debug(document.getElementById('startGameBtn').classList);
 	} else 
 	{
 		document.getElementById(btnID).classList.remove('hide');
@@ -224,66 +230,314 @@ function drawLetter(x, y, letter) {
 /*
  * Function: playersMove()
  * Purpose: Listens for the player's click on 
- * the canvas + determines which grid square
- * the player chose + places the 'X' or 'O' on
- * the board.
+ * the canvas; Driver function for player's move.
  * 
  */
-function playersMove(letter){
-	debug("players move");
-	// listen for click on grid
-	var theCanvas = document.getElementById('canvas');
-		
-	canvas.addEventListener('click', function(evt) {
-		// get the x,y coordinates of the 
-		// player's mouse click
-		var mousePos = getPosition(canvas, evt);
-		
-		// find out which Grid spot was chosen.		
-		var gridSquare = whichGridSpotChosen(mousePos);		
-		debug("Grid chosen: " + gridSquare.number);		
-		
-		debug("place players move on board.");
-		
-		// call the isFree() function so that we 
-		// configure chosen and chosenBy settings on object.
-		isFree(gridSquare.number, letter); 	
-		
-		// place players game piece on center of square.	
-		drawLetter(gridSquare.x, gridSquare.y, letter);
-		
-	}); 	
+function playersMove(){
+	debug("players move");	
+	movesLeft--;
+	
+	debug("Moves Left: " + movesLeft);
+	
+	// listen for click on canvas
+	var theCanvas = document.getElementById('canvas');		
+	canvas.addEventListener('click', on_canvas_click, false);
 }
+
+/*
+ * Function: removeFromArray()
+ * Pupurpose: Removes the selected square number
+ * from the array (sides, corners, center) so that
+ * we keep track of which squares are still available.
+ */
+function removeFromArray(number, type) {
+	if(type == "corner") {
+		corners.splice(corners.indexOf(number), 1);
+	} else if(type == "side") {
+		sides.splice(sides.indexOf(number), 1);
+	} else if (type == 'center') {
+		center.splice(center.indexOf(number), 1);
+	}
+}
+
+/*
+ * Function: on_canvas_click()
+ * Purpose: Finds out which grid square
+ * the player chose + places the 'X' or 'O' on
+ * the board. Updates the configuration variables 
+ * for keeping track of the player's move.
+ */
+function on_canvas_click(evt){
+	// get the x,y coordinates of the 
+	// player's mouse click
+	var mousePos = getPosition(canvas, evt);
+	
+	// find out which Grid spot was chosen.		
+	var gridSquare = whichGridSpotChosen(mousePos);		
+	debug("Grid chosen: " + gridSquare.number);	
+	
+	// keep track of what moves the player makes.
+	if(p_moves.indexOf(gridSquare.number) == -1){
+		p_moves.push(gridSquare.number);	
+	}
+		
+	removeFromArray(gridSquare.number, gridSquare.type);
+	
+	// update grid so that we keep track of which player took which spot.
+	makeChangesInGridTracker(gridSquare.number, player_letter);
+	
+	// call the isFree() function so that we 
+	// configure chosen and chosenBy settings on object.
+	isFree(gridSquare.number, player_letter); 	
+	
+	// place players game piece on center of square.	
+	drawLetter(gridSquare.x, gridSquare.y, player_letter);
+	
+	if(checkForWinner(player_letter) == true)
+	{
+		alert("YOU WIN!!");
+		
+	  	var context = canvas.getContext('2d');
+	
+	  	// Reset canvas & reload page.
+  		context.clear();
+		
+	}
+	
+	// Should the computer have another turn?
+	if(win == 'false' && movesLeft > 0) {
+		// no one has won yet, computer's turn.
+		computersMove();
+	}		
+}
+
+/*
+ * Function: makeChangesInGridTracker
+ * Purpose: edits the winningMoves array to
+ * keep track of what player took which spot.
+ * 
+ * Used later to compare to see if there is a winner
+ */
+function makeChangesInGridTracker(number, letter) {
+	for (var count = 0; count < winningMoves.length; count++)
+		{
+			debug(winningMoves[count]);
+			var index = winningMoves[count].indexOf(number);
+			if (index >= 0) {
+				winningMoves[count][index] = letter;
+			}
+		}	
+}
+
+/*
+ * Function: checkForWinner()
+ * Purpose: checks to see if there is a winner.
+ * Returns: true if a winner is found.
+ */
+function checkForWinner(letter) {
+	var re;
+	
+	// define the regular expression that signifies whether
+	// we have a winner or not.
+	if (letter == 'X'){
+		re = /X,X,X/;
+	} else
+	{
+		re = /O,O,O/;	
+	}
+	
+	for (var count = 0; count < winningMoves.length; count++) {
+		var str = winningMoves[count].join();
+		if(str.match(re) != null ) {
+			// we found a winner
+			win = true;
+			break;			
+		}			
+	}
+	
+	return win;
+}
+
+/*
+ * Function: makeComputerMove()
+ * Purpose: Makes computer's final move 
+ * Draws the letter on the chosen square.
+ * 
+ */
+function makeComputerMove(squareNum) {
+	var result = isFree(squareNum, computer_letter);
+			
+	drawLetter(result.x, result.y, computer_letter);
+	
+	c_moves.push(squareNum);
+	
+	removeFromArray(squareNum, result.type);
+	
+	makeChangesInGridTracker(squareNum, computer_letter);
+}
+
+/* 
+ * Function: determineBestMove()
+ * Purpose: determines the best move for the computer to take.
+ */
+function determineBestMove() {
+	debug("determineBestMove");
+	var takenTurn = false;
+	
+	// Is there a move the computer can make that will win the game?
+	if(c_moves.length >= 2 && takenTurn == false) {
+		var re;
+		// Define regular expressions for 
+		// looking for a win.
+		if (computer_letter == 'X')
+		{
+			var reg1 = /X,\d,X/;
+			var reg2 = /\d,X,X/;
+			var reg3 = /X,X,\d/;
+		} else {
+			var reg1 = /O,\d,O/;
+			var reg2 = /\d,O,O/;
+			var reg3 = /O,O,\d/;
+		}
+		
+		for (var count = 0; count < winningMoves.length; count++) {
+			var str = winningMoves[count].join();
+			
+			if(str.match(reg1) != null || str.match(reg2) != null || str.match(reg3) != null)
+			{
+				for(var i = 0; i < 3; i++) {
+					if(typeof(winningMoves[count][i]) == 'number') {
+						makeComputerMove(winningMoves[count][i]);
+						takenTurn = true;						
+					}
+				}		
+			} 
+		}
+	} 
+	
+	// Is there a move that the player will make that 
+	// will cause the computer to lose?
+	if(p_moves.length >= 2 && takenTurn == false) {
+		// Regular expression that signifies that player will win on next turn.
+		// i.e. X, 2, X ==> means player just needs to take square 2 and he wins.
+		if (computer_letter == 'O') {
+			var reg1 = /X,\d,X/;
+			var reg2 = /\d,X,X/;
+			var reg3 = /X,X,\d/;
+		} else {
+			var reg1 = /O,\d,O/;
+			var reg2 = /\d,O,O/;
+			var reg3 = /O,O,\d/;
+		}	
+		
+		for (var count = 0; count < winningMoves.length; count++)
+		{
+			var str = winningMoves[count].join();
+			
+			if(str.match(reg1) != null || str.match(reg2) != null || str.match(reg3) != null)
+			{
+				for(var i = 0; i < 3; i++) {
+					if(typeof(winningMoves[count][i]) == 'number') {
+						makeComputerMove(winningMoves[count][i]);
+						takenTurn = true;						
+					}
+				}				
+				break;
+			}			
+		}		
+	} 
+	
+	// Take a random corner space since computer hasn't made any moves yet.
+	// Choose a random corner that player did not take.
+	if(c_moves.length == 0 && p_moves.length == 1 && takenTurn == false)
+	{ 
+		var chosenCorner = corners[Math.floor(Math.random() * corners.length)];			
+		var result = isFree(chosenCorner, computer_letter);
+			
+		drawLetter(result.x, result.y, computer_letter);
+		takenTurn = true;
+		
+		// Remove the taken space from the 'corners' array.	
+		corners.splice(corners.indexOf(chosenCorner), 1);
+			
+		// keep track of the computer's moves.
+		c_moves.push(chosenCorner);
+		
+		makeChangesInGridTracker(chosenCorner, computer_letter);
+	}
+	
+	// is there a corner space free?	
+	if (corners.length > 0 && takenTurn == false){
+
+		var chosenCorner = corners[Math.floor(Math.random() * corners.length)];				
+		makeComputerMove(chosenCorner);
+		takenTurn = true;		
+	}
+	
+	// is the center spot available?
+	if(corners.length == 0 && center.length > 0 && takenTurn == false) {
+		makeComputerMove(center[0]);
+		takenTurn = true;
+	}
+	
+	// Is a side space available?
+	if(corners.length == 0 && sides.length > 0 && takenTurn == false)
+	{
+		var side = sides[Math.floor(Math.random() * sides.length)];	
+		makeComputerMove(side);
+		takenTurn = true;
+	}
+
+}
+
+/*
+ * Function: clear
+ * Purpose: clears the canvas and reloads the page.
+ */
+CanvasRenderingContext2D.prototype.clear = 
+  CanvasRenderingContext2D.prototype.clear || function (preserveTransform) {
+    if (preserveTransform) {
+      this.save();
+      this.setTransform(1, 0, 0, 1, 0, 0);
+    }
+
+    this.clearRect(0, 0, this.canvas.width, this.canvas.height);
+
+    if (preserveTransform) {
+      this.restore();
+    }     
+    
+    ticTacToeApp();
+    location.reload();      
+};
 
 /*
  * Function: computersMove()
  * Purpose: Makes the computers move 
  */
-function computersMove(computer_letter) {
+function computersMove() {
 	debug("computers move.");
+	movesLeft--;
 	
-	// ToDo: See is there a move the computer can make 
-	// that will win the game?
+	determineBestMove();
 	
-	// ToDo: See if there is a move that the player will take 
-	// that will cause the computer to lose?
+	if(win == 'false' && movesLeft > 0) {
+		// no one has won yet, computer's turn.
+		playersMove();
+	}
+		
+	// check for win.
+	if(checkForWinner(computer_letter) == true) {
+		alert("COMPUTER WINS!");
+		
+		// reset board.
+		var canvas = document.getElementById('canvas');
+	  	var context = canvas.getContext('2d');
 	
-	// Is a corner space free? 
-	for (var i = 0; i < corners.length; i++)
-	{
-		debug("checking corner: " + corners[i]);
-		var result = isFree(corners[i], computer_letter);
-		// Traverse through the corners till we find one that's free.
-		if (result != false) {
-			//debug("corner space: " + corners[i] + " is free.");
-			drawLetter(result.x, result.y, computer_letter);			
-		}
-		break; // we already found a space to take.		
+	  	// do some drawing
+  		context.clear();
 	}
 	
-	// ToDo: If no corners are free, check for center.
-	
-	// ToDo: Check for side spaces.
 }
 
 /*
@@ -303,7 +557,7 @@ function isFree(number, letter) {
 			free = square1.getObjectInfo();
 			square1.setChosenAndChosenBy(true, letter);
 		} else {
-			free = false;
+			free = {x:0, y:0};
 		}
 	} else if (number == 2)
 	{
@@ -409,14 +663,11 @@ function whoGoesFirst() {
  * Purpose: driver function
  */
 function startGame() {
-	debug("In start Game: " + square1.getNumber());
-	debug("In start Game (2): " + square2.getNumber());
 	// hide the start game button
 	showOrHideButton('startGameBtn', 'hide');
 	
 	// prompt the user to see if he wants to be X or O?
-	var player_letter = getPlayerLetter();
-	var computer_letter;
+	player_letter = getPlayerLetter();	
 	
 	// set the computer letter to the opposite of 
 	// what the player chose.
@@ -428,21 +679,16 @@ function startGame() {
 	}
 	
 	// display the information for the player to see on the home page.
-	document.getElementById('playerLetter').innerHTML = "You are Player: " + player_letter;
-	
+	document.getElementById('playerLetter').innerHTML = "You are Player: " + player_letter;	
 	
 	// Todo: Randomly choose who goes first
-	debug("Choose who goes first");
 	var firstPlayer = whoGoesFirst();
 	
 	// if player goes first, his move.
 	if (firstPlayer == 'player'){
-		document.getElementById('whosTurn').innerHTML = "Who's Turn: YOUR TURN";
-		playersMove(player_letter);
+		playersMove();
 	} else
 	{
-		document.getElementById('whosTurn').innerHTML = "Who's Turn: COMPUTER TURN";
-		debug("Computer's Turn");
-		computersMove(computer_letter);
+		computersMove();
 	}
 }
